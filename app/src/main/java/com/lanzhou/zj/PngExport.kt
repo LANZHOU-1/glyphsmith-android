@@ -8,7 +8,7 @@ import android.graphics.Typeface
 import kotlin.math.max
 import kotlin.math.roundToInt
 
-/** Renders an [ArtResult] to a bitmap by drawing every cell with Canvas. */
+
 object PngExport {
     private const val MAX_EDGE = 4096f
 
