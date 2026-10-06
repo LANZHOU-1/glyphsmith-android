@@ -2,7 +2,7 @@
 
 Turn any image into **text art** — an Android app with three modes: **Chinese**, **ASCII** and **Color**.
 
-English | [简体中文](README.md)
+English | [简体中文](README_ch.md)
 
 Sample image rendered in Chinese mode, 59 characters wide:
 
