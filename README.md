@@ -1,8 +1,10 @@
-# Glyphsmith 字匠
+# Glyphsmith
 
-把任意图片转换成字符画 —— 安卓客户端。三种模式：**中文**、**ASCII**、**彩色**。
+Turn any image into **text art** — an Android app with three modes: **Chinese**, **ASCII** and **Color**.
 
-内置示例图（日落山水）用中文模式生成的字符画（宽度 59 字符）：
+English | [简体中文](README.md)
+
+Sample image rendered in Chinese mode, 59 characters wide:
 
 ```
 龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘
@@ -40,105 +42,90 @@
 龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘目目目龘龘龘龘龘龘龘龘龘龘龘龘龘龘龘
 ```
 
-> 亮处留空、暗处用笔画密的字，所以整幅画是「用字堆出来的照片」。
+> Bright areas stay blank or use light glyphs, dark areas use dense ones — the picture is literally built out of characters.
 
-## 功能
+## Features
 
-- **三种模式**：中文（`丶一十口日目田回無疆龘` 梯度）、ASCII（` .:-=+*#%@`）、彩色（逐字保留原图像素颜色）
-- **彩色模式两种样式**：字符（带颜色的 ASCII 字符）/ 色块（像素风马赛克）
-- **可调参数**：宽度 30–240 字符、对比度 1.0–3.0、预览字号、黑/白背景、自动色阶、深色背景反相
-- **导出与分享**：复制到剪贴板、保存 TXT、保存彩色网页（HTML）、保存 PNG、系统分享（文本 / PNG）
-- **PNG 导出**：按单元格逐字渲染（不是截屏），长边自动限制在 4096 px 内防 OOM，色块样式无缝拼接
-- **内置示例图**，打开即见效果；无需联网，**不申请任何权限**
-- Material Design 3 界面，Android 12+ 跟随壁纸动态取色；页面转场 / 模式切换 / 预览交叉淡化动画；旋转屏幕或切页保留参数
+- **Three modes**: Chinese (`丶一十口日目田回無疆龘` ramp), ASCII (` .:-=+*#%@`) and Color (each glyph keeps the pixel color of the source image)
+- **Two color styles**: glyph (colored ASCII characters) / block (pixel-art mosaic)
+- **Adjustable**: width 30–240 characters, contrast 1.0–3.0, preview font size, black/white background, auto levels, invert for dark backgrounds
+- **Export & share**: copy to clipboard, save TXT, save a colored HTML page, save PNG, system share (text / PNG)
+- **PNG export**: drawn cell by cell with `Canvas` (not a screenshot); the long edge is capped at 4096 px to avoid OOM, block style tiles seamlessly
+- **Built-in sample image** — the effect shows up right after launch; fully offline, **no permissions requested**
+- Material Design 3, dynamic color on Android 12+, page/mode transitions and a cross-fading preview, parameters survive rotation
 
-体积约 1.9 MB，支持 Android 9（API 28）及以上。
+About 1.9 MB, supported on Android 9 (API 28) and above.
 
-## 安装
+## How it works
 
-1. 下载 `Glyphsmith-1.1.apk`（见 Releases），传到手机点击安装
-2. 系统若提示「未知来源」或「不允许安装」，在弹窗里允许本次安装即可
-3. 若手机上装过**签名不同**的旧版本，需要先卸载再装
+1. Resize the image to “columns × rows” — glyph aspect ratio 1:1 for Chinese mode, 1:2 for ASCII / Color, so the result is not stretched
+2. Per-pixel luminance `0.2126R + 0.7152G + 0.0722B`; optional **auto levels** (histogram stretch with a 1% cutoff) and **contrast boost**
+3. Map luminance to a glyph ramp: bright → blank or light glyphs, dark → dense ones (the Chinese ramp runs from `丶` to `龘`)
+4. Color mode skips the ramp lookup and paints each glyph with its pixel color
+5. PNG export draws every cell with `Canvas` (square cells for Chinese / block style, 0.6× width for ASCII) and scales the whole image down when the long edge exceeds 4096 px
 
-## 构建
+## Third-party components
 
-需要 JDK 21、Android SDK 36、Gradle 9.7.1（工程未附带 Gradle Wrapper，用你自己的 Gradle 即可）。
+| Component | Purpose | License |
+| --- | --- | --- |
+| Jetpack Compose / AndroidX (core-ktx, activity, lifecycle) | UI and platform basics | Apache-2.0 |
+| Material 3 + Material Icons Extended | Components and icons | Apache-2.0 |
+| Kotlin stdlib / Gradle / Android Gradle Plugin | Build | Apache-2.0 |
 
-release 签名通过工程根目录的 `keystore.properties` 读取（该文件与 `*.jks` 已 gitignore，不会随仓库分发）：
+No other runtime dependencies.
+
+## Install
+
+1. Download `Glyphsmith-1.1.apk` from Releases and open it on your phone
+2. If the system warns about “unknown sources”, allow this installation
+3. A previously installed build signed with a **different key** has to be uninstalled first
+
+## Build
+
+Requirements: JDK 21, Android SDK 36, Gradle 9.7.1 (this repo ships no Gradle Wrapper — use your own Gradle).
+
+Release signing is read from `keystore.properties` in the project root (that file and `*.jks` are git-ignored and are not distributed with this repository):
 
 ```
 storeFile=keystore.jks
-storePassword=你的密钥库口令
-keyAlias=你的别名
-keyPassword=你的密钥口令
+storePassword=your-store-password
+keyAlias=your-key-alias
+keyPassword=your-key-password
 ```
 
-没有这个文件时构建**依然成功**，只是产出未签名的 release APK。生成自己的密钥：
+Without this file the build still **succeeds**; it simply produces an unsigned release APK. To generate your own key:
 
 ```powershell
 keytool -genkeypair -v -keystore keystore.jks -alias mykey -keyalg RSA -keysize 2048 -validity 10000
 ```
 
-构建命令与产物：
+Build command and output:
 
 ```powershell
 gradle assembleRelease
-# 产物：app/build/outputs/apk/release/app-release.apk
+# output: app/build/outputs/apk/release/app-release.apk
 ```
 
-用 Android Studio 打开工程目录直接 Run 也可以（会自动配置 SDK 路径）。
+You can also open the project in Android Studio and press Run (the SDK path is configured automatically).
 
-## 项目结构
+## Project structure
 
 ```
 app/src/main/java/com/lanzhou/zj/
-├── MainActivity.kt   界面与交互（Jetpack Compose）
-├── Converter.kt      转换算法：灰度 → 字符梯度 / 彩色
-├── PngExport.kt      PNG 导出：Canvas 逐格渲染
-├── ArtViewModel.kt   参数与状态
-└── Theme.kt          Material 3 主题与动态取色
-app/src/main/res/     图标、主题、values-night（深色）、file_paths（分享用）
+├── MainActivity.kt   UI and interaction (Jetpack Compose)
+├── Converter.kt      Conversion: grayscale → glyph ramp / color
+├── PngExport.kt      PNG export: per-cell Canvas rendering
+├── ArtViewModel.kt   Parameters and state
+└── Theme.kt          Material 3 theme and dynamic color
+app/src/main/res/     icons, themes, values-night (dark), file_paths (sharing)
 ```
 
-## 实现说明
+## Author
 
-转换与渲染**全部为本项目自己实现**，没有依赖任何第三方字符画 / 图像处理库：
+- 蓝昼 (lanzhou)
+- Website: <https://lanzhou-1.github.io>
+- Repository: (to be filled)
 
-1. 把图片缩放到「列数 × 行数」——中文模式按字符宽高比 1:1、ASCII / 彩色按 1:2 换算，保证成品不变形
-2. 逐像素计算亮度 `0.2126R + 0.7152G + 0.0722B`；可选**自动色阶**（按 1% 截断做直方图拉伸）与**对比度增强**
-3. 按亮度查字符梯度：亮 → 空格 / 笔画疏，暗 → 笔画密（中文梯度从 `丶` 到 `龘`）
-4. 彩色模式跳过灰度查表，直接把每个像素的颜色套到对应字符上，逐字上色
-5. PNG 导出用 `Canvas` 把每个格子单独绘制（中文 / 色块为正方形格，ASCII 为 0.6 倍宽），长边超过 4096 px 时整体等比缩小
+## License
 
-## 第三方组件
-
-| 组件 | 用途 | 许可 |
-| --- | --- | --- |
-| Jetpack Compose / AndroidX（core-ktx、activity、lifecycle） | 界面与基础能力 | Apache-2.0 |
-| Material 3 + Material Icons Extended | 组件与图标 | Apache-2.0 |
-| Kotlin 标准库 / Gradle / Android Gradle Plugin | 构建 | Apache-2.0 |
-
-除此之外无其他运行时依赖。
-
-## 更新日志
-
-**1.1**
-
-- 新增 PNG 导出（字符画 / 色块像素画）与「分享图片」
-- 修复：色块样式导出时相邻格之间出现暗色缝隙
-- 关于页显示版本号
-
-**1.0**
-
-- 首个版本：中文 / ASCII / 彩色三种模式，支持复制、保存 TXT、保存彩色网页、系统分享
-- Material Design 3 界面、Android 12+ 动态取色、页面与模式切换动画、内置示例图
-
-## 作者
-
-- 蓝昼 lanzhou
-- 个人网站：<https://lanzhou-1.github.io>
-- 开源仓库：（待填写）
-
-## 许可证
-
-待补充（计划使用 MIT License）。
+TBD (MIT License planned).
