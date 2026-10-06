@@ -124,8 +124,3 @@ app/src/main/res/     icons, themes, values-night (dark), file_paths (sharing)
 
 - 蓝昼 (lanzhou)
 - Website: <https://lanzhou-1.github.io>
-- Repository: (to be filled)
-
-## License
-
-TBD (MIT License planned).
