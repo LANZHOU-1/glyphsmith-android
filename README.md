@@ -22,7 +22,7 @@ English | [简体中文](README_ch.md)
 - **Built-in sample image** — the effect shows up right after launch; fully offline, **no permissions requested**
 - Material Design 3, dynamic color on Android 12+, page/mode transitions and a cross-fading preview, parameters survive rotation
 
-About 1.9 MB, supported on Android 9 (API 28) and above.
+About 2.2 MB, supported on Android 9 (API 28) and above.
 
 ## How it works
 
